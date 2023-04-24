@@ -15,16 +15,19 @@ class CMake_Cleaner():
 		self.project_name			= "mpu"
 
 		# Clean List
+		self.clean_type_list		= [".bin",
+									   ".elf",
+									   ".lst",
+									   ".map",
+									   ".cmake",
+									   ".in",]
 		self.clean_file_list		= ["Makefile",
 									   "config.h",
+									   "CMakeLists.txt",
 									   "CMakeCache.txt",
-									   "cmake_install.cmake",
-									   f"{self.project_name}.bin",
-									   f"{self.project_name}.elf",
-									   f"{self.project_name}.lst",
-									   f"{self.project_name}.map",
 									   f"{self.project_name}_readelf.txt",]
 		self.clean_directory_list	= ["CMakeFiles",]
+		self.clean_ignore_files		= []
 		return
 
 	# Process
@@ -41,13 +44,18 @@ class CMake_Cleaner():
 			file_list = os.listdir(current_dir)
 			for f in file_list:
 				if (os.path.isfile(f"{current_dir}/{f}")):
-					if (f in self.clean_file_list):
+					if ((self.__is_included(f)) or (f in self.clean_file_list)):
 						os.remove(f"{current_dir}/{f}")
 				elif (f in self.clean_directory_list):
 					shutil.rmtree(f"{current_dir}/{f}")
 				else:
 					search_queue.append(f"{current_dir}/{f}")
 		return
+	def __is_included(self, filename):
+		for c in self.clean_type_list:
+			if ((filename[-len(c):] == c) and (filename not in self.clean_ignore_files)):
+				return True
+		return False
 
 if (__name__ == "__main__"):
 	cc = CMake_Cleaner()

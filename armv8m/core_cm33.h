@@ -33,7 +33,9 @@
 #ifndef __CORE_CM33_H_GENERIC
 #define __CORE_CM33_H_GENERIC
 
-#include <stdint.h>
+//#include <stdint.h>
+#include <common.h>
+#include "ARMCM33.h"
 
 #ifdef __cplusplus
  extern "C" {
@@ -1586,7 +1588,7 @@ typedef struct
 
 /**
   \brief  Structure type to access the Security Attribution Unit (SAU).
- */
+ *
 typedef struct
 {
   __IOM uint32_t CTRL;                   /*!< Offset: 0x000 (R/W)  SAU Control Register */

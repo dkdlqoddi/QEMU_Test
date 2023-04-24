@@ -40,27 +40,43 @@ class CMake_Builder():
 		]
 
 		# add_subdirectory({self.subdirectory})
-		self.subdirectory_ignore_dirs	= ["test",
-										   "CMakeFiles",]
+		self.subdirectory_ignore_dirs	= ["CMakeFiles",
+										   "main",
+										   "test",]
 		self.subdirectory_ignore_files	= ["config.h",]
 		self.subdirectory_include_types	= [".S",
 										   ".c",
 										   ".h",]
 		self.subdirectory				= self.__search_subdirectory()
 
-		# target_link_libraries({self.target_name}.elf
+		# target_link_libraries({name}.elf
 		# 						{subdirectory})
-		self.target_name	= "mpu"
+		self.main_directory = "main"
+		self.test_directory	= "test"
+		self.project_name = "mpu"
+		self.test_list = self.__search_test()
 
-		# target_include_directories({self.target_name}.elf {self.include_list})
-		self.include_list	= []
+		# set_target_properties({name}.elf PROPERTIES
+		# 									{property} {value})
+		self.main_properties	= [
+			["COMPILE_DEFINITIONS", "DEBUG"],
+			#["COMPILE_DEFINITIONS", "-DUART_ON"],
+		]
+		self.test_properties	= [
+			["COMPILE_DEFINITIONS", "DEBUG"],
+			["COMPILE_DEFINITIONS", "UART_ON"],
+		]
 
-		# add_custom_command(TARGET {self.target_name}.elf {self.command_list})
+		# target_include_directories({name}.elf
+		# 							 {self.include_list})
+		self.include_list	= [["PUBLIC", ["include", "armv8m"],],]
+
+		# add_custom_command(TARGET {name}.elf {self.command_list})
 		self.generate_file	= []
 		self.build_event	= [
-			[f"{self.target_name}.elf", "POST_BUILD", CMake_Variables.objcopy, f"-O binary {self.target_name}.elf {self.target_name}.bin"],
-			[f"{self.target_name}.elf", "POST_BUILD", CMake_Variables.objdump, f"-D -s {self.target_name}.elf > {self.target_name}.lst"],
-			[f"{self.target_name}.elf", "POST_BUILD", CMake_Variables.readelf, f"-a {self.target_name}.elf > {self.target_name}_readelf.txt"],
+			[self.project_name, "POST_BUILD", CMake_Variables.objcopy, f"-O binary {self.project_name}.elf {self.project_name}.bin"],
+			[self.project_name, "POST_BUILD", CMake_Variables.objdump, f"-S {self.project_name}.elf > {self.project_name}.lst"],
+			[self.project_name, "POST_BUILD", CMake_Variables.readelf, f"-a {self.project_name}.elf > {self.project_name}_readelf.txt"],
 		]
 
 		# cmakedefine
@@ -75,11 +91,11 @@ class CMake_Builder():
 			["CMAKE_NM",				"${COMPILER_ROOT}nm"],
 			["CMAKE_OBJCOPY",			"${COMPILER_ROOT}objcopy"],
 			["CMAKE_OBJDUMP",			"${COMPILER_ROOT}objdump"],
-			["COMMON_FLAGS",			"\"-march=armv8-m.main -mtune=cortex-m33 -nostdlib -nostdinc -mthumb -g3 -Wno-builtin-declaration-mismatch\""],
-			["CMAKE_ASM_FLAGS",			"\"-march=armv8-m.main -mtune=cortex-m33 -nostdlib -nostdinc -mthumb -g3 -Wno-builtin-declaration-mismatch\""],
-			["CMAKE_C_FLAGS",			"\"-march=armv8-m.main -mtune=cortex-m33 -nostdlib -nostdinc -mthumb -g3 -Wno-builtin-declaration-mismatch\""],
+			["COMMON_FLAGS",			"\"-march=armv8-m.main -mtune=cortex-m33 -nostdlib -nostdinc -mthumb -g3 -Wno-builtin-declaration-mismatch -Wno-implicit-function-declaration\""],
+			["CMAKE_ASM_FLAGS",			"\"-march=armv8-m.main -mtune=cortex-m33 -nostdlib -nostdinc -mthumb -g3 -Wno-builtin-declaration-mismatch -Wno-implicit-function-declaration\""],
+			["CMAKE_C_FLAGS",			"\"-march=armv8-m.main -mtune=cortex-m33 -nostdlib -nostdinc -mthumb -g3 -Wno-builtin-declaration-mismatch -Wno-implicit-function-declaration\""],
 			["LINKER_SCRIPT",			"${CMAKE_HOME_DIRECTORY}/musca-a.lds"],
-			["CMAKE_EXE_LINKER_FLAGS",	"\"-T ${LINKER_SCRIPT} -N -Xlinker -Map=" + f"{self.target_name}.map\""],
+			["CMAKE_EXE_LINKER_FLAGS",	"\"-T ${LINKER_SCRIPT} -N -Xlinker -Map=" + f"{self.project_name}.map\""],
 		]
 		return
 
@@ -94,10 +110,13 @@ class CMake_Builder():
 		self.__make_configure()
 		self.__make_subdirectory()
 		self.__make_executable()
+		#self.__make_target_properties()
 		self.__make_target_link()
 		self.__make_target_include()
 		self.__make_custom_command()
 		self.fw.close()
+		# Make File Subdirectories "CMakeLists.txt"
+		self.__make_subdirectory_cmakelists()
 		# Make File "config.h.in"
 		self.fw = open("config.h.in", "w")
 		self.__make_cmakedefine()
@@ -112,9 +131,6 @@ class CMake_Builder():
 	def set_project_name(self, name):
 		self.project_name	= name
 		return
-	def set_target_name(self, name):
-		self.target_name	= name
-		return
 
 	# Tools
 	def __search_subdirectory(self):
@@ -123,6 +139,7 @@ class CMake_Builder():
 		while (len(search_queue) != 0):
 			current_dir = search_queue[0]
 			included_list = []
+			subdirectory_list = []
 			search_queue.pop(0)
 			file_list = os.listdir(current_dir)
 			for f in file_list:
@@ -131,14 +148,22 @@ class CMake_Builder():
 						included_list.append(f)
 				elif (f not in self.subdirectory_ignore_dirs):
 					search_queue.append(f"{current_dir}/{f}")
-			if (len(included_list) != 0):
-				result_list.append([current_dir, included_list])
+					subdirectory_list.append(f)
+			if ((len(included_list) + len(subdirectory_list)) != 0):
+				result_list.append([current_dir, included_list, subdirectory_list])
 		return result_list
 	def __is_included(self, filename):
 		for i in self.subdirectory_include_types:
 			if ((filename[-len(i):] == i) and (filename not in self.subdirectory_ignore_files)):
 				return True
 		return False
+	def __search_test(self):
+		test_list = []
+		file_list = os.listdir(self.test_directory)
+		for f in file_list:
+			if (os.path.isdir(f"{self.test_directory}/{f}")):
+				test_list.append(f)
+		return test_list
 	
 	# Build CMakeLists.txt
 	def __make_cmake_version(self):
@@ -171,38 +196,133 @@ class CMake_Builder():
 		return
 	def __make_subdirectory(self):
 		self.fw.write("\n")
-		for subdirectory in self.subdirectory:
-			self.fw.write(f"add_subdirectory({subdirectory[0][2:]})\n")
+		for subdirectory in self.subdirectory[1:]:
+			subdirectory = subdirectory[0].split('/')
+			if (len(subdirectory) > 2):
+				continue
+			self.fw.write(f"add_subdirectory({subdirectory[-1]})\n")
 		return
 	def __make_executable(self):
 		self.fw.write("\n")
-		self.fw.write(f"add_executable({self.target_name}.elf)\n")
+		# For main
+		self.fw.write(f"add_executable({self.project_name}.elf\n")
+		file_list = os.listdir(self.main_directory)
+		for f in file_list:
+			if (self.__is_included(f)):
+				self.fw.write(f"\t{self.main_directory}/{f}\n")
+		self.fw.write(f")\n")
+		# For test
+		for t in self.test_list:
+			self.fw.write(f"add_executable({t}.elf\n")
+			self.fw.write(f"\t{self.test_directory}/{self.test_directory}.S\n")
+			file_list = os.listdir(f"{self.test_directory}/{t}")
+			for f in file_list:
+				if (self.__is_included(f)):
+					self.fw.write(f"\t{self.test_directory}/{t}/{f}\n")
+			self.fw.write(")\n")
+		return
+	def __make_target_properties(self):
+		self.fw.write("\n")
+		# For main
+		self.fw.write(f"set_target_properties({self.project_name}.elf PROPERTIES\n")
+		for p in self.main_properties:
+			self.fw.write(f"\t{p[0]} {p[1]}\n")
+		self.fw.write(")\n")
+		# For test
+		for t in self.test_list:
+			self.fw.write("\n")
+			self.fw.write(f"set_target_properties({t}.elf PROPERTIES\n")
+			for p in self.test_properties:
+				self.fw.write(f"\t{p[0]} {p[1]}\n")
+			self.fw.write(")\n")
 		return
 	def __make_target_link(self):
 		self.fw.write("\n")
-		self.fw.write(f"target_link_libraries({self.target_name}.elf\n")
-		for subdirectory in self.subdirectory:
-			self.fw.write(f"\t{subdirectory[0][2:]}\n")
+		# For main
+		self.fw.write(f"target_link_libraries({self.project_name}.elf\n")
+		for subdirectory in self.subdirectory[1:]:
+			subdirectory = subdirectory[0].split('/')
+			if (len(subdirectory) > 2):
+				continue
+			self.fw.write(f"\t{subdirectory[-1]}\n")
 		self.fw.write(")\n")
+		# For test
+		for t in self.test_list:
+			self.fw.write(f"target_link_libraries({t}.elf\n")
+			for subdirectory in self.subdirectory[1:]:
+				subdirectory = subdirectory[0].split('/')
+				if (len(subdirectory) > 2):
+					continue
+				self.fw.write(f"\t{subdirectory[-1]}\n")
+			self.fw.write(")\n")
 		return
 	def __make_target_include(self):
 		self.fw.write("\n")
+		# For main
 		for attribute, include_list in self.include_list:
-			self.fw.write(f"target_include_directories({self.target_name}.elf {attribute}\n")
+			self.fw.write(f"target_include_directories({self.project_name}.elf {attribute}\n")
 			for i in include_list:
 				self.fw.write(f"\t{i}\n")
 			self.fw.write(")\n")
+		# For test
+		for t in self.test_list:
+			for attribute, include_list in self.include_list:
+				self.fw.write(f"target_include_directories({t}.elf {attribute}\n")
+				for i in include_list:
+					self.fw.write(f"\t{i}\n")
+				self.fw.write(")\n")
 		return
 	def __make_custom_command(self):
 		self.fw.write("\n")
 		# TODO: self.generate_file
 		for target, attribute, command, args in self.build_event:
 			self.fw.write("add_custom_command(\n")
-			self.fw.write(f"\tTARGET {target}\n")
+			self.fw.write(f"\tTARGET {target}.elf\n")
 			self.fw.write(f"\t{attribute}\n")
 			self.fw.write(f"\tCOMMAND {command}\n")
 			self.fw.write(f"\tARGS {args}\n")
 			self.fw.write(")\n")
+		return
+
+	# Build Subdirectory CMakeLists.txt
+	def __make_subdirectory_cmakelists(self):
+		for directory, file_list, subdirectory in self.subdirectory[1:]:
+			self.sfw = open(f"{directory}/CMakeLists.txt", "w")
+			self.__make_subdirectory_add_library(directory, file_list)
+			self.__make_subdirectory_target_include(directory, file_list)
+			self.__make_subdirectory_add_subdirectory(subdirectory)
+			self.sfw.close()
+		return
+	def __make_subdirectory_add_library(self, directory, file_list):
+		if (len(file_list) == 0):
+			return
+		self.sfw.write(f"add_library({directory.split('/')[-1]} OBJECT\n")
+		for f in file_list:
+			self.sfw.write(f"\t{f}\n")
+		self.sfw.write(")")
+		return
+	def __make_subdirectory_target_include(self, directory, file_list):
+		if ((len(self.include_list) == 0) or (len(file_list) == 0)):
+			return
+		directory = directory.split('/')
+		depth = len(directory) - 1
+		directory = directory[-1]
+		self.sfw.write("\n")
+		for attribute, include_list in self.include_list:
+			self.sfw.write(f"target_include_directories({directory} {attribute}\n")
+			for i in include_list:
+				self.sfw.write("\t")
+				for _ in range(depth):
+					self.sfw.write("../")
+				self.sfw.write(f"{i}\n")
+			self.sfw.write(")")
+		return
+	def __make_subdirectory_add_subdirectory(self, subdirectory):
+		if (len(subdirectory) == 0):
+			return
+		self.sfw.write("\n")
+		for s in subdirectory:
+			self.sfw.write(f"add_subdirectory({s})\n")
 		return
 
 	# Build config.h.in

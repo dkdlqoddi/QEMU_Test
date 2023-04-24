@@ -13,10 +13,10 @@ typedef unsigned short		uint16_t;
 typedef	unsigned int		uint32_t;
 typedef unsigned long long	uint64_t;
 /*	Signed Type */
-typedef	char		int8_t;
-typedef short		int16_t;
-typedef int			int32_t;
-typedef long long	int64_t;
+typedef	char				int8_t;
+typedef short				int16_t;
+typedef int					int32_t;
+typedef long long			int64_t;
 /* Data Type */
 #define DOUBLE_WORD_SIZE	(64U)
 #define WORD_SIZE			(32U)
@@ -34,9 +34,6 @@ typedef __builtin_va_list va_list;
 /* Log */
 #define LOG_SIZE	(16)
 #define LOG_LOOP	(4)
-
-/* Section */
-#define SECTION(section)	__attribute__ ((__section__ (section)))
 
 /* Debugging Macros */
 #define DEBUG_USING_R0(data)	\
@@ -70,27 +67,30 @@ typedef __builtin_va_list va_list;
 		:						\
 	);
 
+/* Section */
+#define SECTION(section)	__attribute__ ((__section__ (section)))
+
 /* Exception Change Return Address */
 #define CHANGE_RETURN_ADDRESS	\
-	__asm__(					\
-		"mov r1, sp\n\t"		\
-		"add r1, #32\n\t"		\
-		"mov r1, sp\n\t"		\
-		"pop {r2}\n\t"			\
-		"add r2, #4\n\t"		\
-		"push {r2}\n\t"			\
-		"sub r1, #32\n\t"		\
-		"mov r1, sp" :::		\
+	__asm__(				\
+		"mov r1, sp\n\t"	\
+		"add r1, #32\n\t"	\
+		"mov r1, sp\n\t"	\
+		"pop {r2}\n\t"		\
+		"add r2, #4\n\t"	\
+		"push {r2}\n\t"		\
+		"sub r1, #32\n\t"	\
+		"mov r1, sp" :::	\
 	)
 
 /* Barriers */
-#define __DMB	__asm__("dmb sy" ::: "memory")	/* Data Memory Barrier	*/
-#define __DSB	__asm__("dsb sy" ::: "memory")	/* Data Synchronization Barrier	*/
-#define __ISB	__asm__("isb" ::: "memory")		/* Instruction Synchronization Barrier	*/
+//#define __DMB	__asm__("dmb sy" ::: "memory")	/* Data Memory Barrier	*/
+//#define __DSB	__asm__("dsb sy" ::: "memory")	/* Data Synchronization Barrier	*/
+//#define __ISB	__asm__("isb" ::: "memory")		/* Instruction Synchronization Barrier	*/
 
-/* Log */
-#define PRINT_HEX(hex)	printf("0x%X\n", hex)
-#define print_hex(hex)	printf("0x%x\n", hex)
+/* Register Non-Secure/Secure */
+#define REGISTER_NON_SEUCRE	(0x00000000U)
+#define REGISTER_SECURE		(0x00200000U)
 
 /* Global Memory/Register Control Functions */
 /*	Read Operations */

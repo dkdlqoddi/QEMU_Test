@@ -45,7 +45,7 @@ void set_uart_baudrate(uint32_t clk, uint32_t baudrate)
 
 	write_register(offset, UART_IBRD, UART_IBRD_MASK(bauddiv));
 	write_register(offset, UART_FBRD, UART_FBRD_MASK(bauddiv));
-	__DMB;
+	__DMB();
 
 	/**
 	 * In order to internally update the contents of ibrd or fbrd,
@@ -66,7 +66,7 @@ void init_uart_irq(void)
 void clear_uart_dma(void)
 {
 	write_register(PERI_SECURE | UART0_OFFSET, UART_DMACR, 0U);
-	__ISB;
+	__ISB();
 	return;
 }
 void clear_uart_cr(void)
@@ -78,7 +78,7 @@ void clear_uart_cr(void)
 			  UART_CR_SIREN);
 	data |= (UART_CR_RXE | UART_CR_TXE);
 	write_register(offset, UART_CR, data);
-	__ISB;
+	__ISB();
 	return;
 }
 void set_uart_default_character_format(void)

@@ -1,6 +1,7 @@
 #ifndef __UART__
 #define __UART__
 
+#include <ARMCM33.h>
 #include <common.h>
 #include <peripheral.h>
 
