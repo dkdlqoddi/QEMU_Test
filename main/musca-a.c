@@ -15,7 +15,7 @@
 void cstart(void)
 {
 	/* 1. Enable exception */
-	enable_exceptions();
+	enable_exceptions_and_interrupts();
 	/* 2. Initialize the memory protection unit */
 	set_mpu_regions();
 	ARM_MPU_Enable(0b001U);

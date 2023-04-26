@@ -1,6 +1,9 @@
 #ifndef __COMMON__
 #define __COMMON__
 
+#define _STRINGIFY(x)	#x
+#define STRINGIFY(x)	_STRINGIFY(x)
+
 /* Read/Write Definitions */
 #define		__RO	volatile const	/* 'Read Only' Permissions	*/
 #define		__WO	volatile		/* 'Write Only' Permissions	*/

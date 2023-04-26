@@ -60,43 +60,48 @@ void set_mpu_regions(void)
 	/* Code Region				*/
 	set_mpu_region(0U,
 				   0x00000000U,
+				   ARM_MPU_SH_NON, 0U, 0U, 1U,
+				   0x10000000U - 0x1U);
+	set_mpu_region(1U,
+				   0x10000000U,
 				   ARM_MPU_SH_NON, 0U, 0U, 0U,
 				   0x20000000U - 0x1U);
 	/* SRAM Region				*/
-	set_mpu_region(1U,
+	set_mpu_region(2U,
 				   0x20000000U,
 				   ARM_MPU_SH_NON, 0U, 0U, 0U,
 				   0x40000000U - 0x1U);
 	/* Peripheral Region		*/
-	set_mpu_region(2U,
+	set_mpu_region(3U,
 				   0x40000000U,
 				   ARM_MPU_SH_NON, 0U, 0U, 0U,
 				   0x60000000U - 0x1U);
 	/* RAM						*/
-	set_mpu_region(3U,
+	set_mpu_region(4U,
 				   0x60000000U,
 				   ARM_MPU_SH_NON, 0U, 0U, 0U,
 				   0xA0000000U - 0x1U);
 	/* External Device			*/
-	set_mpu_region(4U,
+	set_mpu_region(5U,
 				   0xA0000000U,
 				   ARM_MPU_SH_NON, 1U, 0U, 1U,
 				   0xE0040000U - 0x1U);
 	/* Device					*/
-	set_mpu_region(5U,
+	set_mpu_region(6U,
 				   0xE0040000U,
 				   ARM_MPU_SH_NON, 0U, 0U, 0U,
 				   0xE0440000U - 0x1U);
 	/* Private Peripheral Bus	*/
-	set_mpu_region(6U,
+	set_mpu_region(7U,
 				   0xE0044000U,
 				   ARM_MPU_SH_NON, 0U, 0U, 0U,
-				   0xE0100000U - 0x1U);
-	/* Vendor_SYS				*/
-	set_mpu_region(7U,
-				   0xE0100000U,
-				   ARM_MPU_SH_NON, 0U, 0U, 0U,
+				   //0xE0100000U - 0x1U);
 				   0xFFFFFFFFU - 0x1U);
+	/* Vendor_SYS				*/
+	//set_mpu_region(7U,
+				   //0xE0100000U,
+				   //ARM_MPU_SH_NON, 0U, 0U, 0U,
+				   //0xFFFFFFFFU - 0x1U);
 	/**
 	 * [2] PRIVDEFENA	: Enables Privileged Access
 	 * [1] HFMIENA		: Enables MPU during HardFault and NMI Handlers

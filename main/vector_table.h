@@ -5,14 +5,11 @@
 #include "../armv8m/ARMCM33.h"
 #include "../libc/stdio.h"
 
-//"and r5, r5, %0\n\t"				\
-		"sub r4, #4\n\t"					\
-
 /* Exception Return MACRO */
 #define EXCEPTION_RETURN_PC_TWO				\
 	__asm__ volatile (						\
 		"mov r4, sp\n\t"					\
-		"add r4, #0x20\n\t"					\
+		"add r4, #0x44\n\t"					\
 		"ldr r5, [r4]\n\t"					\
 		"add r5, #0x02\n\t"					\
 		"str r5, [r4]" :::					\
@@ -20,10 +17,18 @@
 #define EXCEPTION_RETURN_PC_ONE				\
 	__asm__ volatile (						\
 		"mov r4, sp\n\t"					\
-		"add r4, #0x1C\n\t"					\
+		"add r4, #0x40\n\t"					\
 		"ldr r5, [r4]\n\t"					\
 		"add r5, #0x02\n\t"					\
 		"str r5, [r4]" :::					\
+	)
+#define PUSH_REGISTERS			\
+	__asm__ volatile (			\
+		"push {r4-r11, lr}" :::	\
+	)
+#define POP_REGISTERS			\
+	__asm__ volatile (			\
+		"pop {r4-r11, lr}" :::	\
 	)
 
 /* About Vector Table */
@@ -50,9 +55,6 @@ typedef struct
 #define INTERRUPT_TABLE_NS_SECTION	".IRQ_NS"
 #define INTERRUPT_TABLE_S_SECTION	".IRQ_S"
 #define NUMBER_OF_IRQ			(78)
-
-/* Main Process */
-void set_IRQ (void (*irq) (void), uint32_t num);
 
 /* Contents of Vector Table (Non-Secure) */
 void NMI_Handler_NS(void);			/* NMI Handler				*/
@@ -81,14 +83,15 @@ void PendSV_Handler_S(void);		/* PendSV Handler			*/
 void SysTick_Handler_S(void);		/* SysTick Handler			*/
 
 /* Operation */
+void enable_exceptions_and_interrupts(void);
 void enable_exceptions(void);
-void set_exceptions(void);
 void set_vector_table_offset(uint32_t addr);
-void set_all_interrupts_priority(void);
-void set_all_interrupts(void);
+void set_priority_all_interrupts(void);
+void read_priority_all_interrupts(void);
+void allocate_all_interrupts(void);
+void enable_all_interrupts(void);
+void read_enabled_all_interrupts(void);
 
 void check_all_exceptions(void);
-
-void request_system_reset(void);	/* SYSRESETREQ				*/
 
 #endif	// vector_table.h

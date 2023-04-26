@@ -6,12 +6,6 @@
 volatile void (*IRQ_NS[NUMBER_OF_IRQ]) (void)	SECTION(INTERRUPT_TABLE_NS_SECTION)	= { 0 };
 volatile void (*IRQ_S[NUMBER_OF_IRQ]) (void)	SECTION(INTERRUPT_TABLE_S_SECTION)	= { 0 };
 
-void
-set_IRQ (void (*irq) (void), uint32_t num)
-{
-	return;
-}
-
 /* Contents of Vector Table (Non-Secure) */
 void NMI_Handler_NS(void)
 {
@@ -20,6 +14,7 @@ void NMI_Handler_NS(void)
 	 * Exception Number	: 2
 	 * Priority		: -1
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("NMI_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -29,6 +24,7 @@ void NMI_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void HardFault_Handler_NS(void)
@@ -38,6 +34,7 @@ void HardFault_Handler_NS(void)
 	 * Exception Number	: 3
 	 * Priority		: -1
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("HardFault_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -47,6 +44,7 @@ void HardFault_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void MemManage_Handler_NS(void)
@@ -56,6 +54,7 @@ void MemManage_Handler_NS(void)
 	 * Exception Number	: 4
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("MemManage_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -65,6 +64,7 @@ void MemManage_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void BusFault_Handler_NS(void)
@@ -74,6 +74,7 @@ void BusFault_Handler_NS(void)
 	 * Exception Number	: 5
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("BusFault_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -83,6 +84,7 @@ void BusFault_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void UsageFault_Handler_NS(void)
@@ -92,6 +94,7 @@ void UsageFault_Handler_NS(void)
 	 * Exception Number	: 6
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("UsageFault_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -101,6 +104,7 @@ void UsageFault_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void SecureFault_Handler_NS(void)
@@ -110,6 +114,7 @@ void SecureFault_Handler_NS(void)
 	 * Exception Number	: 7
 	 * Priority			: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("SecureFault_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -119,7 +124,8 @@ void SecureFault_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
-	 return;
+	 POP_REGISTERS;
+	return;
 }
 void Reserved_Handler_NS(void)
 {
@@ -128,6 +134,7 @@ void Reserved_Handler_NS(void)
 	 * Exception Number	: 8-10, 13
 	 * Priority		: NA
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("Reserved_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -137,6 +144,7 @@ void Reserved_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void SVC_Handler_NS(void)
@@ -146,6 +154,7 @@ void SVC_Handler_NS(void)
 	 * Exception Number	: 11
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("SVC_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -155,6 +164,7 @@ void SVC_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void DebugMon_Handler_NS(void)
@@ -164,6 +174,7 @@ void DebugMon_Handler_NS(void)
 	 * Exception Number	: 12
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("DebugMon_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -173,6 +184,7 @@ void DebugMon_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void PendSV_Handler_NS(void)
@@ -182,6 +194,7 @@ void PendSV_Handler_NS(void)
 	 * Exception Number	: 14
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("PendSV_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -191,6 +204,7 @@ void PendSV_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void SysTick_Handler_NS(void)
@@ -200,6 +214,7 @@ void SysTick_Handler_NS(void)
 	 * Exception Number	: 15
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("SysTick_Handler_NS!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -209,6 +224,7 @@ void SysTick_Handler_NS(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 
@@ -220,6 +236,7 @@ void NMI_Handler_S(void)
 	 * Exception Number	: 2
 	 * Priority			: -1
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("NMI_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -229,6 +246,7 @@ void NMI_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void HardFault_Handler_S(void)
@@ -238,6 +256,7 @@ void HardFault_Handler_S(void)
 	 * Exception Number	: 3
 	 * Priority			: -1
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("HardFault_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -247,6 +266,7 @@ void HardFault_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void MemManage_Handler_S(void)
@@ -256,6 +276,7 @@ void MemManage_Handler_S(void)
 	 * Exception Number	: 4
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("MemManage_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -265,6 +286,7 @@ void MemManage_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void BusFault_Handler_S(void)
@@ -274,6 +296,7 @@ void BusFault_Handler_S(void)
 	 * Exception Number	: 5
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("BusFault_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -283,6 +306,7 @@ void BusFault_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void UsageFault_Handler_S(void)
@@ -292,6 +316,7 @@ void UsageFault_Handler_S(void)
 	 * Exception Number	: 6
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("UsageFault_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -301,6 +326,7 @@ void UsageFault_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void SecureFault_Handler_S(void)
@@ -310,6 +336,7 @@ void SecureFault_Handler_S(void)
 	 * Exception Number	: 7
 	 * Priority			: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("SecureFault_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -319,7 +346,8 @@ void SecureFault_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
-	 return;
+	 POP_REGISTERS;
+	return;
 }
 void Reserved_Handler_S(void)
 {
@@ -328,6 +356,7 @@ void Reserved_Handler_S(void)
 	 * Exception Number	: 8-10, 13
 	 * Priority		: NA
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("Reserved_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -337,6 +366,7 @@ void Reserved_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void SVC_Handler_S(void)
@@ -346,6 +376,7 @@ void SVC_Handler_S(void)
 	 * Exception Number	: 11
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("SVC_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -355,6 +386,7 @@ void SVC_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void DebugMon_Handler_S(void)
@@ -364,6 +396,7 @@ void DebugMon_Handler_S(void)
 	 * Exception Number	: 12
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("DebugMon_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -373,6 +406,7 @@ void DebugMon_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void PendSV_Handler_S(void)
@@ -382,6 +416,7 @@ void PendSV_Handler_S(void)
 	 * Exception Number	: 14
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("PendSV_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -391,6 +426,7 @@ void PendSV_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 void SysTick_Handler_S(void)
@@ -400,6 +436,7 @@ void SysTick_Handler_S(void)
 	 * Exception Number	: 15
 	 * Priority		: (Programmable)
 	 */
+	PUSH_REGISTERS;
 #ifdef UART_ON
 	printf("SysTick_Handler_S!!\n");
 	EXCEPTION_RETURN_PC_TWO;
@@ -409,19 +446,24 @@ void SysTick_Handler_S(void)
 #ifndef DEBUG
 	while (1);
 #endif
+	POP_REGISTERS;
 	return;
 }
 
 /* Operation */
-void enable_exceptions(void)
+#define MAX_INTERRUPT_MUSCA	(78)
+void enable_exceptions_and_interrupts(void)
 {
-	set_exceptions();
+	uint32_t *get_vtor;
+	enable_exceptions();
 	__NVIC_SetPriorityGrouping(4U);
 	set_vector_table_offset(SCB->VTOR);
-	set_all_interrupts_priority();
-	set_all_interrupts();
+	set_priority_all_interrupts();
+	enable_all_interrupts();
+	read_priority_all_interrupts();
+	read_enabled_all_interrupts();
 }
-void set_exceptions(void)
+void enable_exceptions(void)
 {
 	SCB->SHCSR |= SCB_SHCSR_SECUREFAULTENA_Msk	\
 				| SCB_SHCSR_USGFAULTENA_Msk		\
@@ -434,32 +476,56 @@ void set_vector_table_offset(uint32_t addr)
 	SCB->VTOR = (addr & SCB_VTOR_TBLOFF_Msk);
 	return;
 }
-void set_all_interrupts_priority(void)
+void set_priority_all_interrupts(void)
 {
-	__NVIC_SetPriority(Interrupt0_IRQn, 0U);
-	__NVIC_SetPriority(Interrupt1_IRQn, 1U);
-	__NVIC_SetPriority(Interrupt2_IRQn, 2U);
-	__NVIC_SetPriority(Interrupt3_IRQn, 3U);
-	__NVIC_SetPriority(Interrupt4_IRQn, 4U);
-	__NVIC_SetPriority(Interrupt5_IRQn, 5U);
-	__NVIC_SetPriority(Interrupt6_IRQn, 6U);
-	__NVIC_SetPriority(Interrupt7_IRQn, 7U);
-	__NVIC_SetPriority(Interrupt8_IRQn, 8U);
-	__NVIC_SetPriority(Interrupt9_IRQn, 9U);
+	for (uint32_t IRQn = 0; IRQn < MAX_INTERRUPT_MUSCA; IRQn++)
+	{
+		//NVIC->IPR[IRQn] = (uint8_t)((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t)0xFFUL);
+		NVIC->IPR[IRQn] = (uint8_t)(IRQn & 0xFFU);
+	}
 	return;
 }
-void set_all_interrupts(void)
+void read_priority_all_interrupts(void)
 {
-	__NVIC_EnableIRQ(Interrupt0_IRQn);
-	__NVIC_EnableIRQ(Interrupt1_IRQn);
-	__NVIC_EnableIRQ(Interrupt2_IRQn);
-	__NVIC_EnableIRQ(Interrupt3_IRQn);
-	__NVIC_EnableIRQ(Interrupt4_IRQn);
-	__NVIC_EnableIRQ(Interrupt5_IRQn);
-	__NVIC_EnableIRQ(Interrupt6_IRQn);
-	__NVIC_EnableIRQ(Interrupt7_IRQn);
-	__NVIC_EnableIRQ(Interrupt8_IRQn);
-	__NVIC_EnableIRQ(Interrupt9_IRQn);
+	uint32_t temp;
+	for (uint32_t IRQn = 0; IRQn < MAX_INTERRUPT_MUSCA; IRQn++)
+	{
+		temp = NVIC->IPR[IRQn];
+		printf("Priority of IRQ[%d] = %d\n", temp, temp);
+	}
+	return;
+}
+void allocate_all_interrupts(void)
+{
+	for (uint32_t IRQn = 0; IRQn < MAX_INTERRUPT_MUSCA; IRQn++)
+	{
+		continue;
+	}
+	return;
+}
+void enable_all_interrupts(void)
+{
+	for (uint32_t IRQn = 0; IRQn < MAX_INTERRUPT_MUSCA; IRQn++)
+	{
+		NVIC->ISER[(IRQn >> 5U)] = 1U << (IRQn & 0x1FU);
+	}
+	return;
+}
+void read_enabled_all_interrupts(void)
+{
+	uint32_t temp;
+	for (uint32_t IRQn = 0; IRQn < MAX_INTERRUPT_MUSCA; IRQn++)
+	{
+		temp = (NVIC->ISER[(IRQn >> 5U)] & (1U << (IRQn & 0x1FU))) >> (IRQn & 0x1FU);
+		if (temp)
+		{
+			printf("IRQ[%d] is Enabled\n", IRQn);
+		}
+		else
+		{
+			printf("IRQ[%d] is Disabled\n", IRQn);
+		}
+	}
 	return;
 }
 void check_all_exceptions(void)
@@ -467,9 +533,7 @@ void check_all_exceptions(void)
 	/* Exception Test */
 	uint32_t *temp;
 
-	/* Call Reset_Handler*/
-	//request_system_reset();
-	//SCB->AIRCR |= 0x0000000CU;
+	/* Call Reset_Handler TODO */
 
 	/* Call NMI_Handler TODO */
 	NMI_Handler_S();
@@ -480,6 +544,10 @@ void check_all_exceptions(void)
 	/* Call MemManage_Handler */
 	temp = (uint32_t *)0xA0000000UL;
 	*temp = 0xFFFFFFFFU;
+	__asm__ volatile (
+		"movs r2, #2\n\t"
+		"blx %0" ::"r"(0x1):
+	);
 
 	/* Call BusFault_Handler */
 	temp = (uint32_t *)0xFFFFFFFFUL;
@@ -498,17 +566,6 @@ void check_all_exceptions(void)
 	PendSV_Handler_S();
 
 	/* Call SysTick Handler TODO */
-	// SysTick Control and Status Register
-	//uint32_t *SYST_SCSR;
-	//SYST_SCSR = (uint32_t *)0xE000E010UL;
-	//*SYST_SCSR = 0x00000007U;
 	SysTick_Handler_S();
-	return;
-}
-void request_system_reset(void)
-{
-	uint32_t temp = read_register(0x00000000, 0xE000ED0C);
-	temp |= 0x00000004U;
-	write_register(0x00000000, 0xE000ED0C, temp);
 	return;
 }
