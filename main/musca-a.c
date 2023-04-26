@@ -18,7 +18,6 @@ void cstart(void)
 	enable_exceptions_and_interrupts();
 	/* 2. Initialize the memory protection unit */
 	set_mpu_regions();
-	ARM_MPU_Enable(0b001U);
 	/* 3. Initialize any critical I/O devices (UART) */
 	init_uart();
 	/* 4. Enable interrupts */

@@ -4,6 +4,7 @@
 #include <common.h>
 #include "../armv8m/ARMCM33.h"
 #include "../libc/stdio.h"
+#include "interrupt_table.h"
 
 /* Exception Return MACRO */
 #define EXCEPTION_RETURN_PC_TWO				\
@@ -54,7 +55,7 @@ typedef struct
 /* About Interrupt Table */
 #define INTERRUPT_TABLE_NS_SECTION	".IRQ_NS"
 #define INTERRUPT_TABLE_S_SECTION	".IRQ_S"
-#define NUMBER_OF_IRQ			(78)
+#define NUMBER_OF_IRQ				(78)
 
 /* Contents of Vector Table (Non-Secure) */
 void NMI_Handler_NS(void);			/* NMI Handler				*/

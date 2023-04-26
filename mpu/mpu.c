@@ -57,6 +57,7 @@ void set_mpu_region(uint8_t idx,
 
 void set_mpu_regions(void)
 {
+	ARM_MPU_Disable();
 	/* Code Region				*/
 	set_mpu_region(0U,
 				   0x00000000U,
@@ -107,6 +108,6 @@ void set_mpu_regions(void)
 	 * [1] HFMIENA		: Enables MPU during HardFault and NMI Handlers
 	 * [0] ENABLE		: Enables MPU
 	 */
-	ARM_MPU_Enable(0b001U);
+	ARM_MPU_Enable(0b111U);
 	return;
 }
